@@ -1,4 +1,5 @@
 import cgi
+import datetime
 import os
 import random
 import json
@@ -63,32 +64,11 @@ SEE ALSO
     def get(self, got):
         if not got:
             self.response.out.write(self.help(self.u, self.r))
+            if self.request.query_string == 'purge':
+                a_month_ago = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
+                for record in Sprunge.gql('WHERE date < DATETIME(:1)', a_month_ago).run():
+                    record.delete()
             return
-
-        # delete entry
-        #if got.endswith('/secretpassword'):
-        #    got = got.split('/')
-        #    c = Sprunge.gql('WHERE name = :1', got[0]).get()
-        #    self.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        #    if c:
-        #        self.response.out.write('''
-        #        deleting %s
-        #        --------
-        #        c.content
-        #        ''' % (got[0], c.content))
-        #        c.delete()
-        #    else:
-        #        self.response.out.write(got[0] + ' not here')
-        #    return
-
-        # bulk delete
-        #if got.endswith('/secretpassword'):
-        #    self.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        #    c = Sprunge.gql('order by date asc limit 500')
-        #    for x in c:
-        #        self.response.out.write('%s\n' % x.date)
-        #        x.delete()
-        #    return
 
         c = Sprunge.gql('WHERE name = :1', got).get()
         if not c:
@@ -130,15 +110,6 @@ SEE ALSO
             except Exception as ex:
                 self.response.out.write('{0}\n'.format(ex))
                 return
-
-            # clear out the same amount of space we've used up
-            to_clear = len(s.content)
-            while to_clear > 0:
-                old = Sprunge.gql('ORDER BY date ASC LIMIT 1').get()
-                if not old:
-                    break
-                to_clear -= len(old.content)
-                old.delete()
 
             try:
                 response = urlfetch.fetch(
