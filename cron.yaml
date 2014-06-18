@@ -1,0 +1,4 @@
+cron:
+- description: daily purge job
+  url: /?purge
+  schedule: every 24 hours

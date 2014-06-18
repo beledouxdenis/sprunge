@@ -1,4 +1,5 @@
 import cgi
+import datetime
 import os
 import random
 import sys
@@ -61,6 +62,10 @@ SEE ALSO
     def get(self, got):
         if not got:
             self.response.out.write(self.help(self.u, self.r))
+            if self.request.query_string == 'purge':
+                a_month_ago = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')
+                for record in Sprunge.gql('WHERE date < DATETIME(:1)', a_month_ago).run():
+                    record.delete()
             return
 
         c = Sprunge.gql('WHERE name = :1', got).get()
@@ -103,15 +108,6 @@ SEE ALSO
             except Exception as ex:
                 self.response.out.write('{0}\n'.format(ex))
                 return
-
-            # clear out the same amount of space we've used up
-            to_clear = len(s.content)
-            while to_clear > 0:
-                old = Sprunge.gql('ORDER BY date ASC LIMIT 1').get()
-                if not old:
-                    break
-                to_clear -= len(old.content)
-                old.delete()
 
             self.response.out.write('{0}/{1}\n'.format(self.u, nid))
 
