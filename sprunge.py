@@ -1,9 +1,11 @@
 import cgi
 import os
 import random
+import json
 import sys
 import wsgiref.handlers
 
+from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 
@@ -138,6 +140,16 @@ SEE ALSO
                 to_clear -= len(old.content)
                 old.delete()
 
+            try:
+                response = urlfetch.fetch(
+                    "http://api.icndb.com/jokes/random",
+                    method=urlfetch.POST,
+                    headers = {"Content-Type": "application/json"})
+                joke = json.loads(response.content).get('value', {}).get('joke')
+            except:
+                joke = False
+            if joke:
+                self.response.out.write(joke + '\n')
             self.response.out.write('{0}/{1}\n'.format(self.u, nid))
 
 def main():
