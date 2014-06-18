@@ -22,7 +22,7 @@ class Sprunge(db.Model):
 
 class Index(webapp.RequestHandler):
 
-    u = 'http://sprunge.us'
+    u = 'http://pastesha.re'
     r = 'sprunge'
 
     def help(self, u, r):
