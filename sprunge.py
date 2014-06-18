@@ -1,4 +1,3 @@
-import cgi
 import datetime
 import os
 import random
@@ -14,10 +13,12 @@ import pygments.lexers
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 
+
 class Sprunge(db.Model):
     name = db.StringProperty()
     content = db.TextProperty()
     date = db.DateTimeProperty(auto_now_add=True)
+
 
 class Index(webapp.RequestHandler):
 
@@ -55,8 +56,8 @@ SEE ALSO
         nid = ''
         symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
         while len(nid) < 4:
-            n = random.randint(0,35)
-            nid = nid + symbols[n:n+1]
+            n = random.randint(0, 35)
+            nid = nid + symbols[n:n + 1]
         return nid
 
     def get(self, got):
@@ -87,14 +88,13 @@ SEE ALSO
         self.response.out.write(highlight(c.content,
                                           lexer,
                                           HtmlFormatter(full=True,
-                                          style='borland',
-                                          lineanchors='n',
-                                          linenos='inline',
-                                          encoding='utf-8')))
+                                                        style='borland',
+                                                        lineanchors='n',
+                                                        linenos='inline',
+                                                        encoding='utf-8')))
 
     def post(self, got):
         self.response.headers['Content-Type'] = 'text/plain'
-        got = self.request.query_string
         if self.request.get(self.r):
             nid = self.new_id()
             while Sprunge.gql('WHERE name = :1', nid).get():
@@ -111,8 +111,9 @@ SEE ALSO
 
             self.response.out.write('{0}/{1}\n'.format(self.u, nid))
 
+
 def main():
-    application = webapp.WSGIApplication([(r'/(.*)', Index)],debug=False)
+    application = webapp.WSGIApplication([(r'/(.*)', Index)], debug=False)
     wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == "__main__":
