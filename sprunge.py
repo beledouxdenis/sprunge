@@ -63,31 +63,6 @@ SEE ALSO
             self.response.out.write(self.help(self.u, self.r))
             return
 
-        # delete entry
-        #if got.endswith('/secretpassword'):
-        #    got = got.split('/')
-        #    c = Sprunge.gql('WHERE name = :1', got[0]).get()
-        #    self.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        #    if c:
-        #        self.response.out.write('''
-        #        deleting %s
-        #        --------
-        #        c.content
-        #        ''' % (got[0], c.content))
-        #        c.delete()
-        #    else:
-        #        self.response.out.write(got[0] + ' not here')
-        #    return
-
-        # bulk delete
-        #if got.endswith('/secretpassword'):
-        #    self.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        #    c = Sprunge.gql('order by date asc limit 500')
-        #    for x in c:
-        #        self.response.out.write('%s\n' % x.date)
-        #        x.delete()
-        #    return
-
         c = Sprunge.gql('WHERE name = :1', got).get()
         if not c:
             self.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
